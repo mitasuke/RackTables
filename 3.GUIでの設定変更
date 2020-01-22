@@ -1,0 +1,125 @@
+■ロケーション登録
+
+[Rackspace] → [Manage locations]タブ
+　→ [Name]に「東京データセンタ」と入力して、右側の [Add new location] をクリック
+
+[Parent] に 東京データセンタ を選択して以下を追加
+・1F
+・2F
+
+[Rackspace] → [Manage locations]タブ
+　→ [Name]に「大阪データセンタ」と入力して、右側の [Add new location] をクリック
+
+[Parent] に 大阪データセンタ を選択して以下を追加
+・4F
+
+
+■ラック登録
+
+[Rackspace] → [Manage rows]タブ
+　→ [Location] を「1F」に設定
+　→ [Name] に「1列目」と入力して、右側の [Add new row] をクリック
+
+[Browse]タブを開くと、ロケーションと Row の項目が登録されている。
+
+
+[Rackspace] → [Browse]タブ
+　→ 画面上の [Row] に表示されている [手前(01-04)] をクリックすると、
+　　 ラックの管理画面が表示されるので、ここからラックを追加したりする
+　→ [Add new rack]タブ 内で追加するラックの情報を入力する
+
+　　 Add many の項目に以下のように入力（複数ラックを一気に登録できそう）
+　　　・Height in units・・・42
+　　　・Rack Names(required)・・・1-4
+                                  5-8
+                                  9-12
+                                  13-16
+　　 入力したら Add をクリック
+
+[Rackspace]を押すと、追加したラックが Racks に表示される
+
+これを各ロケーションに対して行う。
+
+
+■Asset tagが空欄の時の表示を変える
+
+オブジェクトを登録する際、Asset tag を空欄にしておくと、
+Viewタブ内に Asset tag is missing. というメッセージが赤い背景で表示される。
+
+エラーでもないのに目立ち過ぎるので変えたい。
+
+[参考]
+http://hunter.txt-nifty.com/sidetech/2015/09/racktables-asse.html
+
+[Configuration] → [User interface] → [Change]タブ
+ → [ASSETWARN_LISTSRC] の設定値を変える
+
+{$typeid_4} or {$typeid_7} or {$typeid_8}
+↓
+{$typeid_99999}
+
+画面下の Save changes をクリックして反映
+
+
+
+■画面左上に会社名を表示させたい
+
+画面左上の「MyCompanyName」の部分に会社名を入れたい。
+
+[Configuration] → [User interface] → [Change]タブ
+と進んで、[enterprise] の設定値を変える。
+
+=============================
+MyCompanyName
+↓
+kaisya Co.Ltd.
+=============================
+　→画面下の Save changes をクリックして反映
+
+
+
+■ユニット番号を上から昇順にしたい
+
+RackTablesで表示されるラック図について、
+ユニット番号は上から降順で表示されるのがデフォルトの模様。(42,41,･･･,2,1)
+
+ユニット番号が上から昇順（1,2,･･･,41,42）になっている場合は以下のようにして修正する。
+
+対象ラックをクリックし、[Properties]タブへ
+↓
+Tags の configure をクリック
+↓
+[tag name] で「ascending order」と入力して、
+[Create tag]をクリックする。
+
+[Configuration] → [User interface] → [Change]タブ
+と進んで、[REVERSED_RACKS_LISTSRC] の設定値を変える。
+
+==========================================
+false
+↓
+{ascending order}
+==========================================
+　→画面下の Save changes をクリックして反映
+
+対象ラックを表示させたら [Tags] で ascending order を選択して Save changes
+
+これで、ユニット番号が 1,2,･･･,41,42 になっているはず。
+
+※1台ずつ設定するのがとても面倒くさい・・・。
+
+
+
+■ラック図が2行表示に分かれないようにしたい
+
+ラック数が多すぎて、Rackspace での表示が1行に収まりきらず2行で表示されてしまう場合。
+
+[Configuration] → [User interface] → [Change]タブ
+と進んで、[RACKS_PER_ROW] の設定値を変える。
+
+12 → 15
+
+画面下の Save changes をクリックして反映
+
+1行に収まるようになった。
+（3行はみ出していたので3増やしてみた）
