@@ -1,0 +1,215 @@
+初期状態での一覧
+
+mysql> SELECT * FROM Attribute;
++------+--------+-----------------------------+
+| id   | type   | name                        |
++------+--------+-----------------------------+
+|    1 | string | OEM S/N 1                   |
+|    2 | dict   | HW type                     |
+|    3 | string | FQDN                        |
+|    4 | dict   | SW type                     |
+|    5 | string | SW version                  |
+|    6 | uint   | number of ports             |
+|    7 | float  | max. current, Ampers        |
+|    8 | float  | power load, percents        |
+|   13 | float  | max power, Watts            |
+|   14 | string | contact person              |
+|   16 | uint   | flash memory, MB            |
+|   17 | uint   | DRAM, MB                    |
+|   18 | uint   | CPU, MHz                    |
+|   20 | string | OEM S/N 2                   |
+|   21 | date   | support contract expiration |
+|   22 | date   | HW warranty expiration      |
+|   24 | date   | SW warranty expiration      |
+|   25 | string | UUID                        |
+|   26 | dict   | Hypervisor                  |
+|   27 | uint   | Height, units               |
+|   28 | string | Slot number                 |
+|   29 | uint   | Sort order                  |
+|   30 | dict   | Mgmt type                   |
+| 9999 | string | base MAC address            |
++------+--------+-----------------------------+
+
+
+①：
+[Configuration] → Attributes
+
+Edit map で、消したい項目からオブジェクトを全て引き剥がす。
+（マイナス(-)を押して消す）
+
+・FQDN
+・HW warranty expiration
+・OEM S/N 2
+・support contract expiration
+・SW warranty expiration
+
+
+②：
+MySQLデータベースから DELETE で消す
+　→表示がおかしくなる事があるのでやめておく
+
+★注意★
+FQDN を DELETE FROM Attribute where id = 3; で完全削除すると、
+Internal Server Error によってオブジェクトが消せなくなるので注意。
+
+
+③：
+属性値の名前変更・追加
+
+[Configuration] → [Attributes] → [Edit attributes] と進む。
+
+contact person → お客様名
+OEM S/N 1      → シリアル番号
+
+[追加]
+OS（server OS type と紐付ける）
+型番（string）
+シール貼り付け（dict）
+設置年月日（string）
+納入日（string）
+資産区分（string）
+
+
+④：
+Dictionaryの名前変更・追加
+
+-------------------------------------------
+[Configuration] → [Dictionary] → [Manage chapters] と進んで、
+シール という名前の項目を追加。
+
+[Configuration] → [Dictionary] → [シール] → [Edit]タブ と進み、
+[Word] の部分に各選択肢を入力して、登録する。
+（「OK」「まだ」「不要」の3つを登録）
+-------------------------------------------
+
+-------------------------------------------
+「RAID models」も追加する。
+
+select * from Chapter;
+（追加された）
+| 10001 | no     | RAID models                  |
+
+新しい機器を登録する時はこんなSQL：
+UPDATE Dictionary SET chapter_id=10001 WHERE dict_key = 1738;
+UPDATE Dictionary SET dict_value='Newtech%GPASS%SweeperStorII-TF' WHERE dict_key = 1738;
+-------------------------------------------
+
+-------------------------------------------
+「Load Balancer」を追加
+
+GUIで追加
+mysql> select * from Chapter;
+| 10002 | no     | Load Balancer                |
+
+[Configuration] → [Dictionary] → [ObjectType]
+ → ここにも Load Balancer を追加
+-------------------------------------------
+
+
+
+●Server OS type に登録されている内容を整理
+
+GUIでは 追加 ができても 削除 ができない？
+MySQLにつないでSQL文で調整する。
+
+$ /usr/local/mysql/bin/mysql -uroot -p
+mysql> use racktables
+
+確認：
+SELECT * FROM Dictionary WHERE dict_key = 441;
+
+削除：
+DELETE FROM Dictionary where dict_key = 441;
+
+変更：
+UPDATE Dictionary SET dict_value='CentOS%GSKIP%CentOS 6' WHERE dict_key = 1667;
+
+
+実行したSQL：
+
+DELETE FROM Dictionary where dict_key = 1331;
+DELETE FROM Dictionary where dict_key = 229;
+DELETE FROM Dictionary where dict_key = 230;
+DELETE FROM Dictionary where dict_key = 231;
+DELETE FROM Dictionary where dict_key = 243;
+DELETE FROM Dictionary where dict_key = 422;
+DELETE FROM Dictionary where dict_key = 423;
+DELETE FROM Dictionary where dict_key = 443;
+DELETE FROM Dictionary where dict_key = 444;
+DELETE FROM Dictionary where dict_key = 418;
+DELETE FROM Dictionary where dict_key = 419;
+DELETE FROM Dictionary where dict_key = 420;
+DELETE FROM Dictionary where dict_key = 234;
+DELETE FROM Dictionary where dict_key = 235;
+DELETE FROM Dictionary where dict_key = 421;
+DELETE FROM Dictionary where dict_key = 954;
+DELETE FROM Dictionary where dict_key = 1395;
+DELETE FROM Dictionary where dict_key = 1709;
+DELETE FROM Dictionary where dict_key = 2405;
+
+UPDATE Dictionary SET dict_value='CentOS%GSKIP%CentOS 4' WHERE dict_key = 441;
+UPDATE Dictionary SET dict_value='CentOS%GSKIP%CentOS 5' WHERE dict_key = 442;
+UPDATE Dictionary SET dict_value='CentOS%GSKIP%CentOS 6' WHERE dict_key = 1667;
+UPDATE Dictionary SET dict_value='CentOS%GSKIP%CentOS 7' WHERE dict_key = 2404;
+UPDATE Dictionary SET dict_value='Xen%GSKIP%XenServer 7.1' WHERE dict_key = 1514;
+UPDATE Dictionary SET dict_value='RHEL%GSKIP%Red Hat Enterprise Linux 7' WHERE dict_key = 2143;
+
+
+●server models に登録されている内容を整理
+
+UPDATE Dictionary SET dict_value='IBM System x%GPASS%3550 M3' WHERE dict_key = 1837;
+UPDATE Dictionary SET dict_value='IBM System x%GPASS%3550' WHERE dict_key = 1826;
+UPDATE Dictionary SET dict_value='IBM System x%GPASS%3550 M4' WHERE dict_key = 1830;
+UPDATE Dictionary SET dict_value='IBM System x%GPASS%3550 M2' WHERE dict_key = 1478;
+UPDATE Dictionary SET dict_value='HP%GPASS%DL380 Gen10' WHERE dict_key = 114;
+UPDATE Dictionary SET dict_value='HP%GPASS%ProLiant DL360p Gen8' WHERE dict_key = 113;
+UPDATE Dictionary SET dict_value='HP%GPASS%DL360 Gen10' WHERE dict_key = 112;
+UPDATE Dictionary SET dict_value='HP%GPASS%ProLiant DL360 Gen9' WHERE dict_key = 104;
+UPDATE Dictionary SET dict_value='HP%GPASS%DL160 Gen9' WHERE dict_key = 534;
+UPDATE Dictionary SET dict_value='HP%GPASS%ProLiant DL385 Gen10' WHERE dict_key = 106;
+UPDATE Dictionary SET dict_value='Newtech%GPASS%CloudyIII' WHERE dict_key = 1741;
+
+
+
+●RAID models に追加
+
+UPDATE Dictionary SET chapter_id=10001 WHERE dict_key = 1736;
+UPDATE Dictionary SET dict_value='Newtech%GPASS%SupremacyII-FC' WHERE dict_key = 1736;
+UPDATE Dictionary SET chapter_id=10001 WHERE dict_key = 1737;
+UPDATE Dictionary SET dict_value='Newtech%GPASS%Supremacy RAID' WHERE dict_key = 1737;
+UPDATE Dictionary SET chapter_id=10001 WHERE dict_key = 1738;
+UPDATE Dictionary SET dict_value='ADTX%GPASS%AXRR-LH000FF' WHERE dict_key = 1738;
+UPDATE Dictionary SET chapter_id=10001 WHERE dict_key = 1739;
+UPDATE Dictionary SET dict_value='Newtech%GPASS%SweeperStor' WHERE dict_key = 1739;
+UPDATE Dictionary SET chapter_id=10001 WHERE dict_key = 1740;
+UPDATE Dictionary SET dict_value='Newtech%GPASS%SweeperStorII' WHERE dict_key = 1740;
+
+
+
+●Load Balancer に追加
+	
+UPDATE Dictionary SET chapter_id=10002 WHERE dict_key = 304;
+UPDATE Dictionary SET dict_value='F5%GPASS%BIG-IP 2000' WHERE dict_key = 304;
+UPDATE Dictionary SET chapter_id=10002 WHERE dict_key = 935;
+UPDATE Dictionary SET dict_value='F5%GPASS%BIG-IP i800SERIES' WHERE dict_key = 935;
+
+
+●KVM
+
+UPDATE Dictionary SET dict_value='Aten%GPASS%CN8000' WHERE dict_key = 492;
+
+
+●router models
+
+UPDATE Dictionary SET dict_value='Cisco%GPASS%841MJ' WHERE dict_key = 303;
+UPDATE Dictionary SET dict_value='YAMAHA%GPASS%RTX1200' WHERE dict_key = 2245;
+
+
+●network security models
+
+UPDATE Dictionary SET dict_value='Cisco%GPASS%ASA 5508' WHERE dict_key = 822;
+
+
+●network switch models
+
+UPDATE Dictionary SET dict_value='Cisco%GPASS%Catalyst 2960L-24TS-LL' WHERE dict_key = 2170;
