@@ -1,0 +1,74 @@
+とりあえずMySQLバックアップ
+# /usr/local/mysql/bin/mysqldump --single-transaction --create-options --add-drop-table --all-databases --events --force -u root -p > db.dmp_20180921
+
+
+オブジェクトを追加する際に表示される Object type には
+不要なものも混じっているので整理したい。
+
+
+初期状態
+
+mysql> select * from Dictionary where chapter_id = 1;
++------------+----------+-------------+-----------------------+
+| chapter_id | dict_key | dict_sticky | dict_value            |
++------------+----------+-------------+-----------------------+
+|          1 |        1 | yes         | BlackBox              |
+|          1 |       10 | yes         | CableOrganizer        |
+|          1 |       15 | yes         | console               |
+|          1 |        5 | yes         | DiskArray             |
+|          1 |     1055 | yes         | FC switch             |
+|          1 |      445 | yes         | KVM switch            |
+|          1 |     1562 | yes         | Location              |
+|          1 |     1787 | yes         | Management interface  |
+|          1 |       14 | yes         | MediaConverter        |
+|          1 |       13 | yes         | Modem                 |
+|          1 |      447 | yes         | multiplexer           |
+|          1 |     1503 | yes         | Network chassis       |
+|          1 |      798 | yes         | Network security      |
+|          1 |        8 | yes         | Network switch        |
+|          1 |        9 | yes         | PatchPanel            |
+|          1 |        2 | yes         | PDU                   |
+|          1 |     1398 | yes         | Power supply          |
+|          1 |     1397 | yes         | Power supply chassis  |
+|          1 |     1560 | yes         | Rack                  |
+|          1 |        7 | yes         | Router                |
+|          1 |     1561 | yes         | Row                   |
+|          1 |     1644 | yes         | serial console server |
+|          1 |        4 | yes         | Server                |
+|          1 |     1502 | yes         | Server chassis        |
+|          1 |        3 | yes         | Shelf                 |
+|          1 |       11 | yes         | spacer                |
+|          1 |        6 | yes         | TapeLibrary           |
+|          1 |       12 | yes         | UPS                   |
+|          1 |     1504 | yes         | VM                    |
+|          1 |     1505 | yes         | VM Cluster            |
+|          1 |     1506 | yes         | VM Resource Pool      |
+|          1 |     1507 | yes         | VM Virtual Switch     |
+|          1 |     1323 | yes         | Voice/video           |
+|          1 |      965 | yes         | Wireless              |
++------------+----------+-------------+-----------------------+
+
+
+■不要なものを削除する
+
+DELETE FROM Dictionary WHERE dict_key = 1;
+DELETE FROM Dictionary WHERE dict_key = 1787;
+DELETE FROM Dictionary WHERE dict_key = 1398;
+DELETE FROM Dictionary WHERE dict_key = 1397;
+DELETE FROM Dictionary WHERE dict_key = 1502;
+DELETE FROM Dictionary WHERE dict_key = 12;
+DELETE FROM Dictionary WHERE dict_key = 1505;
+DELETE FROM Dictionary WHERE dict_key = 1506;
+DELETE FROM Dictionary WHERE dict_key = 1507;
+DELETE FROM Dictionary WHERE dict_key = 5;
+DELETE FROM Dictionary WHERE dict_key = 447;
+DELETE FROM Dictionary WHERE dict_key = 1644;
+DELETE FROM Dictionary WHERE dict_key = 11;
+DELETE FROM Dictionary WHERE dict_key = 6;
+DELETE FROM Dictionary WHERE dict_key = 1323;
+DELETE FROM Dictionary WHERE dict_key = 1503;
+
+
+■必要なものを追加する
+
+INSERT INTO Dictionary(chapter_id,dict_key,dict_sticky,dict_value) values (1,5,'yes','RAID');
